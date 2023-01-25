@@ -1,0 +1,25 @@
+extends layout
+
+block layout-content
+  div.d-flex.flex-column
+    div.d-flex(style='height:200px')
+      //- div.w-100(style='background: #D7A088')
+      img(src='/images/banner.png' width='700px')
+    div.p-3
+      h2 New Credit Card Application
+      text Fill out the form below to apply for a new credit card application as a new customer
+    //- div.NavButtons
+    //-   a(href='/users')
+    //-       div.NavButton Just dive in!
+
+    form.p-3(role='form' method='POST' action='/submitted' style='width:500px')
+      div.form-group.mb-3
+        label(for='name') Full Name:
+        input#name.form-control(type='text' placeholder='full name' name='name')
+      div.form-group.mb-3
+        label(for='email') Email Address:
+        input#email.form-control(type='email' placeholder='address@email.com' name='email')
+      div.form-group.mb-3
+        label(for='email') Requested Credit $:
+        input#credit.form-control(type='number' placeholder='6000' name='credit')
+      button.btn.btn-primary(type="submit" name="asdf") Submit

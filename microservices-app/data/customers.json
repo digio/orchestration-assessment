@@ -1,0 +1,9 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/crm/v1/customers"
+  },
+  "response": {
+    "body": "OK"
+  }
+}

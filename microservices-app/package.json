@@ -1,0 +1,36 @@
+{
+  "name": "microservices-stubs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "node ./bin/www",
+    "start": "nodemon ./bin/www",
+    "start:watch": "browser-sync start --config bs-config.js",
+    "dev": "concurrently --kill-others \"npm run start\" \"npm run start:watch\"",
+    "orchestrate": "node orchestration/worker.js",
+    "orchestrate:watch": "nodemon orchestration/worker.js"
+  },
+  "main": "./bin/www",
+  "dependencies": {
+    "@temporalio/activity": "^1.5.2",
+    "@temporalio/client": "^1.5.2",
+    "@temporalio/common": "^1.5.2",
+    "@temporalio/worker": "^1.5.2",
+    "@temporalio/workflow": "^1.5.2",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.1",
+    "node-fetch": "^2.6.8",
+    "nodemailer": "^6.9.0",
+    "pug": "^3.0.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.27.10",
+    "concurrently": "^7.6.0",
+    "nodemon": "^2.0.20"
+  }
+}

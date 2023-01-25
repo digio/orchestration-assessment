@@ -1,0 +1,97 @@
+@startuml credit-card-workflow
+title New Credit Card Application Workflow: "new_credit_card_application"
+
+autonumber
+
+actor Customer
+
+participant "Web App" as App
+
+box "Orchestration Tool" #DDFFDD
+  participant Conductor
+end box
+
+participant CRM
+
+participant "Credit Check" as Checker
+
+participant "Notification Service (multi endpoints)" as Notifier
+
+actor Banker
+
+== 1. Submit New Application ==
+autonumber
+activate Customer
+group submit_credit_application
+Customer -> App: submits new application
+activate App
+App -> Conductor: POST input: string(name), string(email), number(credit)
+deactivate App
+activate Conductor
+end
+
+== 2. Create New CRM Profile ==
+activate Conductor
+group create_crm_user
+Conductor -> CRM: GET input: string(name)
+activate CRM
+CRM -> Conductor: output: string(id)
+deactivate CRM
+end
+
+== 3. Check Credit Score ==
+group poll_check_credit
+Conductor -> Checker: GET input: string(name), string(id), number(credit)
+activate Checker
+Checker -> Checker: timer for random result
+Checker -> Conductor: output: string(result)
+deactivate Checker
+end
+
+== 4. SWITCH: Choose Task Based On Credit Check  ==
+group what_credit_score
+Conductor -> Conductor: input: string(result)
+end
+
+== 4.1. SWITCH: "Low Credit"  ==
+group trigger_manual_approval
+Conductor -> Notifier: POST manual-approval input: string(name), string(id), number(credit)
+activate Notifier
+Notifier -> Banker: send notification of manual need for approval
+deactivate Notifier
+activate Banker
+Banker -> App: manually approve credit
+deactivate Banker
+activate App
+end
+
+group manual_approval
+App -> Conductor: POST input: string(workflowInstanceId), string(taskId)
+deactivate App
+end
+
+== 4.2. SWITCH: "Acceptable Credit" or Continue "Low Credit"  ==
+
+group provision_card
+Conductor -> Notifier: POST provisioned input: string(name), string(id), number(credit)
+activate Notifier
+Notifier -> Customer: send notification of provisioned card
+deactivate Customer
+Notifier -> Conductor
+deactivate Notifier
+end
+
+group notify_banker
+Conductor -> Notifier: POST notify input: string(name), string(id), number(credit)
+activate Notifier
+Notifier -> Banker: send notification of provisioned card
+Notifier -> Conductor
+deactivate Notifier
+end
+
+== 4.3. SWITCH: "High Credit"  ==
+
+group update_crm_upsell
+Conductor -> CRM: string(name), string(id), number(credit)
+deactivate Conductor
+end

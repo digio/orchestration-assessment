@@ -1,0 +1,12 @@
+extends layout
+
+block layout-content
+  div.d-flex.flex-column
+    div.d-flex(style='height:200px')
+      //- div.w-100(style='background: #D7A088')
+      img(src='/images/banner.png' width='700px')
+    div.p-3
+      h2 Manual Approval for Low Credit Score
+      text Provided the customer has passed the manual check, to approve their application please click:
+    div.p-3
+      a(href=`${url}`) I approve a credit of #{credit} for customer #{userName}
