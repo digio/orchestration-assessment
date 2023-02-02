@@ -9,6 +9,10 @@ router.post('/', function (req, res, next) {
   const credit = req.body.credit;
   const crmId = req.body.id;
 
+  console.log('USERNAME', req.body.name);
+  console.log('CREDIT', req.body.credit);
+  console.log('ID', req.body.id);
+
   const recipientAddresses = '"Banker" <banker@bank.com>';
   const subject = 'New Credit Card Provisioned';
   const header = 'A New Credit Card Provisioned for New Customer';
