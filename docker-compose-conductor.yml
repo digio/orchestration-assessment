@@ -1,0 +1,119 @@
+version: '3.7'
+
+volumes:
+  opensearch-data1:
+    driver: local
+
+networks:
+  conductor-poc-network:
+    name: conductor-poc-network
+
+services:
+  conductor-server:
+    environment:
+      - CONFIG_PROP=config-local.properties
+    image: conductor:server
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-conductor
+    networks:
+      - conductor-poc-network
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: ["CMD", "curl","-I" ,"-XGET", "http://localhost:8080/health"]
+      interval: 60s
+      timeout: 30s
+      retries: 12
+    links:
+      - opensearch:es
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+
+  conductor-ui:
+    environment:
+      - WF_SERVER=http://conductor-server:8080
+    image: conductor:ui
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-conductor-ui
+    networks:
+      - conductor-poc-network
+    ports:
+      - 5000:5000
+    links:
+      - conductor-server
+#    stdin_open: true
+
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch-node1
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=opensearch-node1
+      - discovery.seed_hosts=opensearch-node1
+      - cluster.initial_cluster_manager_nodes=opensearch-node1
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch-data1:/usr/share/opensearch/data # Creates volume called opensearch-data1 and mounts it to the container
+    ports:
+      - 9200:9200 # REST API
+      - 9600:9600 # Performance Analyzer
+    networks:
+      - conductor-poc-network
+    healthcheck:
+      test: timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/9300'
+      interval: 5s
+      timeout: 5s
+      retries: 24
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: opensearch-dashboards
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    environment:
+      OPENSEARCH_HOSTS: '["https://opensearch-node1:9200"]'
+    networks:
+      - conductor-poc-network
+
+  express-app:
+    container_name: express-app
+    hostname: express-app-host
+    environment:
+      - NODE_ENV=development
+      - POC_EMAIL_USER=<insert_mailtrap_user_key>
+      - POC_EMAIL_PASS=<insert_mailtrap_pass_key>
+      # - ORCHESTRATION_TOOL=temporal
+      - ORCHESTRATION_TOOL=conductor
+      - CONDUCTOR_HOST=conductor-host
+      # - CONDUCTOR_HOST=localhost
+      - TEMPORAL_HOST=localhost
+      # - TEMPORAL_HOST=temporal-host
+    networks:
+      - conductor-poc-network
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "4000"
+    ports:
+      - "4000:4000"
+    command:
+      npm run serve
