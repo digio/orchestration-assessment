@@ -1,0 +1,65 @@
+{
+  "name": "provision_credit_card",
+  "description": "Provision a new credit card for new customer",
+  "version": 1,
+  "schemaVersion": 2,
+  "inputParameters": [
+    "name",
+    "email",
+    "id",
+    "credit"
+  ],
+  "outputParameters": {
+    "name": "${workflow.input.name}",
+    "email": "${workflow.input.email}",
+    "credit": "${workflow.input.credit}",
+    "id": "${workflow.input.id}",
+    "result": "${prov_card_notify_banker.output.response}"
+  },
+  "ownerEmail": "poc@orchestration.com",
+  "workflowStatusListenerEnabled": true,
+  "tasks": [
+    {
+      "name": "provision_card",
+      "taskReferenceName": "prov_card_provision_card",
+      "inputParameters": {
+        "name": "${workflow.input.name}",
+        "credit": "${workflow.input.credit}",
+        "id": "${workflow.input.id}",
+        "email": "${workflow.input.email}",
+        "http_request": {
+          "uri": "http://express-app-host:4000/provisioned",
+          "method": "POST",
+          "contentType": "application/json",
+          "body": {
+            "name": "${workflow.input.name}",
+            "credit": "${workflow.input.credit}",
+            "id": "${workflow.input.id}",
+            "email": "${workflow.input.email}"
+          }
+        }
+      },
+      "type": "HTTP"
+    },
+    {
+      "name": "notify_banker",
+      "taskReferenceName": "prov_card_notify_banker",
+      "inputParameters": {
+        "name": "${workflow.input.name}",
+        "credit": "${workflow.input.credit}",
+        "id": "${workflow.input.id}",
+        "http_request": {
+          "uri": "http://express-app-host:4000/notify",
+          "method": "POST",
+          "contentType": "application/json",
+          "body": {
+            "name": "${workflow.input.name}",
+            "credit": "${workflow.input.credit}",
+            "id": "${workflow.input.id}"
+          }
+        }
+      },
+      "type": "HTTP"
+    }
+  ]
+}

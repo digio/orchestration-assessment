@@ -13,54 +13,10 @@ The Orchestration tools may be using overlapping ports. Since we don't want to m
 Check the Jira board for any bugs that are related to set up if you see that things aren't working.
 
 ## Temporal
-
-You will need to run 2 processes locally:
-
-1. The temporal cluster - you will need to set this up yourself as per your preferences. Follow the official docs at https://docs.temporal.io/application-development/foundations?lang=typescript#run-a-development-cluster. I chose to run it via cloning the docker-compose repo as instructed and then running it in a container, but other ways are possible.
-2. The temporal worker inside the microservices app - there are 2 options of running the temporal worker:
-
-### Local
-
-Running this locally will make it faster to develop because you can hot reload.
-
-First export the variables in your terminal:
-
-```
-export ORCHESTRATION_TOOL=temporal
-export TEMPORAL_HOST=localhost
-```
-
-Then in same terminal:
-
-```
-cd microservices-app
-npm run orchestrate
-// OR
-npm run orchestrate:watch // this will hot reload the worker if you make changes locally
-```
-1. When running the microservices stubs app remember that you will need to export env variables based on what you chose to run Temporal on.
-
-### Docker compose
-
-We will run the worker in Docker for our demo.
-
-First ensure that the correct env variables are uncommented in the `docker-compose.yml` file:
-
-```
-# - TEMPORAL_HOST=localhost <=== Comment this one out
-  - TEMPORAL_HOST=temporal-host <=== Uncomment this one so we connect to the host via Docker
-```
-
-Then in your terminal:
-
-```
-TODO !!! I haven't actually included the worker in the container yet
-```
+Please refer to `README.TEMPORAL.md`.
 
 ## Conductor
-
-TBD
-
+Please refer to `README.CONDUCTOR.md`.
 
 # Web App
 
@@ -158,3 +114,6 @@ OPTION 2: To run app in dev mode where your changes reflect automatically on the
 `npm run dev`
 
 Open web-app on http://localhost:8000/ 
+
+# Postman Collection
+Please refer to `postman/README.md`.

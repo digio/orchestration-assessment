@@ -1,0 +1,176 @@
+{
+  "name": "new_credit_card_application",
+  "description": "Manage a new customer credit card application",
+  "version": 1,
+  "schemaVersion": 2,
+  "inputParameters": [
+    "name",
+    "email",
+    "credit"
+  ],
+  "outputParameters": {
+    "name": "${workflow.input.name}",
+    "email": "${workflow.input.email}",
+    "credit": "${workflow.input.credit}",
+    "id": "${new_app_create_crm_user.output.response.body.id}",
+    "result": "${new_app_poll_check_credit.output.response.body.result}"
+  },
+  "ownerEmail": "poc@orchestration.com",
+  "workflowStatusListenerEnabled": true,
+  "tasks": [
+    {
+      "name": "create_crm_user",
+      "taskReferenceName": "new_app_create_crm_user",
+      "inputParameters": {
+        "name": "${workflow.input.name}",
+        "http_request": {
+          "uri": "http://express-app-host:4000/crm?name=${workflow.input.name}",
+          "method": "GET"
+        }
+      },
+      "type": "HTTP"
+    },
+    {
+      "name": "poll_check_credit",
+      "taskReferenceName": "new_app_poll_check_credit",
+      "inputParameters": {
+        "name": "${workflow.input.name}",
+        "credit": "${workflow.input.credit}",
+        "id": "${new_app_create_crm_user.output.response.body.id}",
+        "http_request": {
+          "uri": "http://express-app-host:4000/check?name=${workflow.input.name}&id=${new_app_create_crm_user.output.response.body.id}&credit=${workflow.input.credit}",
+          "method": "GET"
+        }
+      },
+      "type": "HTTP"
+    },
+    {
+      "name": "what_credit_score",
+      "taskReferenceName": "new_app_what_credit_score",
+      "inputParameters": {
+        "case_value_param": "${new_app_poll_check_credit.output.response.body.result}"
+      },
+      "type": "SWITCH",
+      "evaluatorType": "value-param",
+      "expression": "case_value_param",
+      "decisionCases": {
+        "High Credit": [
+          {
+            "name": "update_crm_upsell",
+            "taskReferenceName": "new_app_update_crm_upsell",
+            "inputParameters": {
+              "name": "${workflow.input.name}",
+              "credit": "${workflow.input.credit}",
+              "id": "${new_app_create_crm_user.output.response.body.id}",
+              "http_request": {
+                "uri": "http://express-app-host:4000/crm",
+                "method": "PUT",
+                "contentType": "application/json",
+                "body": {
+                  "name": "${workflow.input.name}",
+                  "credit": "${workflow.input.credit}",
+                  "id": "${new_app_create_crm_user.output.response.body.id}"
+                }
+              }
+            },
+            "type": "HTTP"
+          }
+        ],
+        "Acceptable Credit": [
+          {
+            "name": "provision_credit_card_sub",
+            "taskReferenceName": "new_app_acceptable_credit_provision_credit_card",
+            "inputParameters": {
+              "name": "${workflow.input.name}",
+              "credit": "${workflow.input.credit}",
+              "email": "${workflow.input.email}",
+              "id": "${new_app_create_crm_user.output.response.body.id}"
+            },
+            "type": "SUB_WORKFLOW",
+            "subWorkflowParam": {
+              "name": "provision_credit_card",
+              "version": 1
+            }
+          }
+        ],
+        "Low Credit": [
+          {
+            "name": "manual_task_fork",
+            "taskReferenceName": "new_app_manual_task_fork",
+            "type": "FORK_JOIN",
+            "forkTasks": [
+              [
+                {
+                  "name": "manual_approval",
+                  "taskReferenceName": "new_app_manual_approval",
+                  "type": "HUMAN"
+                }
+              ],
+              [
+                {
+                  "name": "get_manual_approval_taskid",
+                  "taskReferenceName": "new_app_get_manual_approval_taskid",
+                  "inputParameters": {
+                    "http_request": {
+                      "uri": "http://localhost:8080/api/admin/task/manual_approval",
+                      "method": "GET"
+                    }
+                  },
+                  "type": "HTTP"
+                },
+                {
+                  "name": "trigger_manual_approval",
+                  "taskReferenceName": "new_app_trigger_manual_approval",
+                  "inputParameters": {
+                    "name": "${workflow.input.name}",
+                    "credit": "${workflow.input.credit}",
+                    "id": "${new_app_create_crm_user.output.response.body.id}",
+                    "workflowInstanceId": "${new_app_get_manual_approval_taskid.output.response.body[0].workflowInstanceId}",
+                    "taskId": "${new_app_get_manual_approval_taskid.output.response.body[0].taskId}",
+                    "http_request": {
+                      "uri": "http://express-app-host:4000/manual-approval",
+                      "method": "POST",
+                      "contentType": "application/json",
+                      "body": {
+                        "name": "${workflow.input.name}",
+                        "credit": "${workflow.input.credit}",
+                        "id": "${new_app_create_crm_user.output.response.body.id}",
+                        "workflowInstanceId": "${new_app_get_manual_approval_taskid.output.response.body[0].workflowInstanceId}",
+                        "taskId": "${new_app_get_manual_approval_taskid.output.response.body[0].taskId}"
+                      }
+                    }
+                  },
+                  "type": "HTTP"
+                }
+              ]
+            ]
+          },
+          {
+            "name": "manual_task_join",
+            "taskReferenceName": "new_app_manual_task_join",
+            "type": "JOIN",
+            "joinOn": [
+              "new_app_manual_approval",
+              "new_app_trigger_manual_approval"
+            ]
+          },
+          {
+            "name": "provision_credit_card_sub",
+            "taskReferenceName": "new_app_low_credit_provision_credit_card",
+            "inputParameters": {
+              "name": "${workflow.input.name}",
+              "credit": "${workflow.input.credit}",
+              "email": "${workflow.input.email}",
+              "id": "${new_app_create_crm_user.output.response.body.id}"
+            },
+            "type": "SUB_WORKFLOW",
+            "subWorkflowParam": {
+              "name": "provision_credit_card",
+              "version": 1
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

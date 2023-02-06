@@ -1,0 +1,122 @@
+[
+  {
+    "name": "create_crm_user",
+    "retryCount": 3,
+    "retryLogic": "FIXED",
+    "retryDelaySeconds": 10,
+    "timeoutSeconds": 300,
+    "timeoutPolicy": "TIME_OUT_WF",
+    "responseTimeoutSeconds": 180,
+    "inputKeys": [
+      "name"
+    ],
+    "outputKeys": [
+      "name",
+      "id"
+    ],
+    "ownerEmail": "poc@orchestration.com",
+    "description": "Create CRM profile for a new user"
+  },
+  {
+    "name": "poll_check_credit",
+    "retryCount": 5,
+    "retryLogic": "LINEAR_BACKOFF",
+    "retryDelaySeconds": 30,
+    "timeoutSeconds": 300,
+    "timeoutPolicy": "TIME_OUT_WF",
+    "responseTimeoutSeconds": 180,
+    "inputKeys": [
+      "name",
+      "id",
+      "credit"
+    ],
+    "outputKeys": [
+      "name",
+      "id",
+      "credit",
+      "result"
+    ],
+    "ownerEmail": "poc@orchestration.com",
+    "description": "Initiate and poll a credit check"
+  },
+  {
+    "name": "update_crm_upsell",
+    "retryCount": 3,
+    "retryLogic": "FIXED",
+    "retryDelaySeconds": 10,
+    "timeoutSeconds": 300,
+    "timeoutPolicy": "TIME_OUT_WF",
+    "responseTimeoutSeconds": 180,
+    "inputKeys": [
+      "name",
+      "id",
+      "credit"
+    ],
+    "ownerEmail": "poc@orchestration.com",
+    "description": "Update CRM user with upsell credit"
+  },
+  {
+    "name": "trigger_manual_approval",
+    "retryCount": 3,
+    "retryLogic": "FIXED",
+    "retryDelaySeconds": 10,
+    "timeoutSeconds": 300,
+    "timeoutPolicy": "TIME_OUT_WF",
+    "responseTimeoutSeconds": 180,
+    "inputKeys": [
+      "name",
+      "id",
+      "credit"
+    ],
+    "ownerEmail": "poc@orchestration.com",
+    "description": "Notify banker of required manual approval"
+  },
+  {
+    "name": "get_manual_approval_taskid",
+    "retryCount": 3,
+    "retryLogic": "FIXED",
+    "retryDelaySeconds": 10,
+    "timeoutSeconds": 300,
+    "timeoutPolicy": "TIME_OUT_WF",
+    "responseTimeoutSeconds": 180,
+    "ownerEmail": "poc@orchestration.com",
+    "description": "Get the taskId for manual_approval task in progress"
+  },
+  {
+    "name": "manual_approval",
+    "ownerEmail": "poc@orchestration.com",
+    "description": "Wait for manual approval from banker"
+  },
+  {
+    "name": "provision_card",
+    "retryCount": 3,
+    "retryLogic": "FIXED",
+    "retryDelaySeconds": 10,
+    "timeoutSeconds": 300,
+    "timeoutPolicy": "TIME_OUT_WF",
+    "responseTimeoutSeconds": 180,
+    "inputKeys": [
+      "name",
+      "id",
+      "credit"
+    ],
+    "ownerEmail": "poc@orchestration.com",
+    "description": "Notify customer of provisioned credit card"
+  },
+  {
+    "name": "notify_banker",
+    "retryCount": 3,
+    "retryLogic": "FIXED",
+    "retryDelaySeconds": 10,
+    "timeoutSeconds": 300,
+    "timeoutPolicy": "TIME_OUT_WF",
+    "responseTimeoutSeconds": 180,
+    "inputKeys": [
+      "name",
+      "id",
+      "credit"
+    ],
+    "ownerEmail": "poc@orchestration.com",
+    "description": "Notify banker of provisioned credit card"
+  }
+]

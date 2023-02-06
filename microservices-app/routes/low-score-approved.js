@@ -1,6 +1,9 @@
-var express = require('express');
-var fetch = require('node-fetch');
-var router = express.Router();
+const express = require('express');
+const fetch = require('node-fetch');
+const router = express.Router();
+const { WorkflowClient } = require('@temporalio/client');
+
+const { SIGNAL } = require('../constants');
 
 async function completeConductorManualTask(workflowInstanceId, taskId) {
   try {
@@ -24,7 +27,14 @@ async function completeConductorManualTask(workflowInstanceId, taskId) {
   }
 }
 
-router.get('/', function (req, res, next) {
+async function completeTemporalManualTask(workflowInstanceId) {
+  const client = new WorkflowClient();
+  const handle = client.getHandle(workflowInstanceId);
+
+  await handle.signal(SIGNAL.MANUAL_APPROVAL_UNBLOCK);
+}
+
+router.get('/', function (req, res) {
   console.log('Low score approved request received: ', { query: req.query, body: req.body });
   // console.debug('Full request received: ', req);
   const userName = req.query.name;
@@ -33,9 +43,16 @@ router.get('/', function (req, res, next) {
   const taskId = req.query.taskId;
 
   console.log('Marking manual task as complete to continue card application process: ', { workflowInstanceId, taskId });
-  completeConductorManualTask(workflowInstanceId, taskId).then((response) => {
-    console.log('Manual task marked as complete successfully: ', workflowInstanceId, taskId, response);
-  });
+
+  if (process.env.ORCHESTRATION_TOOL === 'conductor') {
+    completeConductorManualTask(workflowInstanceId, taskId).then((response) => {
+      console.log('Manual task marked as complete successfully: ', workflowInstanceId, taskId, response);
+    });
+  } else {
+    completeTemporalManualTask(workflowInstanceId).then((response) => {
+      console.log('Manual task marked as complete successfully: ', workflowInstanceId, response);
+    });
+  }
 
   res.render('low-score-approved', {
     userName,

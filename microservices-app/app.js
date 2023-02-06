@@ -1,21 +1,22 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var submittedRouter = require('./routes/submitted');
-var lowScoreApprovalRouter = require('./routes/low-score-approval');
-var lowScoreApprovedRouter = require('./routes/low-score-approved');
-var crmRouter = require('./routes/crm');
-var checkRouter = require('./routes/check');
-var provisionedRouter = require('./routes/provisioned');
-var upsellRouter = require('./routes/upsell');
-var notifyRouter = require('./routes/notify');
-var manualApprovalRouter = require('./routes/manual-approval');
+const indexRouter = require('./routes/index');
+const submittedRouter = require('./routes/submitted');
+const lowScoreApprovalRouter = require('./routes/low-score-approval');
+const lowScoreApprovedRouter = require('./routes/low-score-approved');
+const crmRouter = require('./routes/crm');
+const checkRouter = require('./routes/check');
+const provisionedRouter = require('./routes/provisioned');
+const upsellRouter = require('./routes/upsell');
+const notifyRouter = require('./routes/notify');
+const manualApprovalRouter = require('./routes/manual-approval');
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,6 +26,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
