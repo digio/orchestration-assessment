@@ -1,0 +1,16 @@
+FROM node:14-alpine
+
+LABEL maintainer="DigIO"
+
+RUN apk update && apk add --no-cache python3 py3-pip make g++ git
+
+# Download latest release sources
+RUN git clone https://github.com/Netflix/conductor.git
+
+
+WORKDIR /conductor/ui
+
+# Installs all node packages. Cached unless package.json changes
+RUN yarn install
+
+CMD [ "yarn", "start" ]

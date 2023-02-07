@@ -37,12 +37,13 @@ We use Mailtrap and nodemailer in our notification service to send out emails to
 
 You will need to create an account with Mailtrap, it is free: https://mailtrap.io/home. You can use whatever email or other entry point (Google, Github, etc) as you wish. This is exposing an SMTP to hit and monitor for you. It doesn't use your email to send the emails, only to log in to Mailtrap. Mailtrap has a UI that will show you the received emails.
 
-Once you create your account you will be given a couple of keys by Mailtrap, update the env variables in the `docker-compose.yml`:
+Once you create your account you will be given a couple of keys by Mailtrap. You will need to update these keys in the repo for the project to work.
 
-```
-  - POC_EMAIL_USER=<insert_mailtrap_user_key>
-  - POC_EMAIL_PASS=<insert_mailtrap_pass_key>
-```
+Next create a copy of the file `env.sample` called `.env` (notice the leading dot)
+and update the two environemnt variables inside the file.
+
+The necessary credentials can be found in the Mailtrap Web UI in
+Email Testing -> Inboxes -> My Inbox -> Show Credentials.
 
 Use the Mailtrap UI to monitor any new emails sent out by our workflows.
 

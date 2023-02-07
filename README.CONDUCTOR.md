@@ -6,9 +6,16 @@ Please **NOTE** that there may be some bugs in Conductor that we have recorded i
 https://mantelgroup.atlassian.net/browse/OTP-2.
 If you are having issues, that would be a good place to search in case we already visited them in this project.
 
+# Preconditions
+- a local Docker service (e.g. Docker Desktop or Rancher Desktop)
+- a working Internet connection
+
 ## Running Conductor
 
 You can either clone the repo and run Conductor in local command line processes, download a packaged JAR file that will run the Conductor for you, or you can spin up a container with all the relevant services through their docker compose option.
+
+We have also provided a docker compose file that will spin up Conductor in containers locally for you by pulling the repo and building it. Choose your preferred option and follow the instructions below.
+
 
 Instructions can be found here:
 
@@ -23,11 +30,107 @@ The containerised option is preferable for this PoC, unless you are trying to de
 * Conductor UI: http://localhost:5000/
 * Conductor Swagger: http://localhost:8080/swagger-ui/index.html?configUrl=/api-docs/swagger-config#/
 
-### Local
+and the demo POC app:
+* The POC demo app: http://localhost:4000/
 
-TBD
 
-### Docker compose
+## Setting up Conductor
+
+### Potential issues
+
+#### Apple Silicon Mac
+If you're running an Apple Silicon Mac (M1, M2 etc) you will have to
+explicitly set the container image platform for the Elasticsearch
+used by Conductor to `linux/amd64` as there is no ARM64 image available
+for Elasticsearch 6.8.
+To do this in the below Prepare steps after cloning you need to edit the
+file `docker/docker-compose.yaml` and find the line
+`image: elasticsearch:6.8.15`. Just before or after this line, with the
+same indentation level, add `platform: linux/amd64` and save the file.
+
+Furthermore in the `environment:` list you will need to add <br/>
+`- bootstrap.system_call_filter=false`<br/>
+in cases where you see an exception on ElasticSearch startup.
+
+#### macOS 13 and newer
+With macOS 13 Apple introduced the Control Center (as known from iOS)
+which is nice but introduces a port conflict with the conductor-ui as
+both applications listen on port 5000.
+
+More specifically the service listening is called AirPlay Receiver and
+is used for sharing Audio and Video from other Apple devices to the Mac.
+Usually this is a quite useless feature and therefore we can disable it
+and by doing so free up port 5000.
+
+Open System Preferences, search and click on AirDrop and then turn off
+AirPlay Receiver.
+
+#### Elasticsearch timeout on startup
+The docker compose startup of Elasticsearch can fail sometimes as it
+can take a while and Docker will mark it as unhealthy after 1 minute
+and abort the start.
+
+If this happens consider to increase the `healthcheck -> retries` property
+in the docker-compose.yaml file for the elasticsearch service from `12` to
+`24` or more.
+
+#### Using OpenSearch over ElasticSearch
+As ElasticSearch has some issues like the Apple Silicon limitation and
+higher resource requirements one can choose to use OpenSearch as an
+alternative. OpenSearch is an in-place replacement for ElasticSearch and
+fully API-compatible.
+See the `docker-compose-conductor.uml` for more details on how to set it up.
+
+#### Error `vm.max_map_count`
+
+Depending on the current Docker VM configuration the error<br/>
+`max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]`<br/>
+can prevent successful startup of the search pods.
+
+To increase that setting for the Docker VM use the `rdctl` command line tool<br/>
+`rdctl shell sudo sysctl -w vm.max_map_count=262144`
+
+
+## Docker compose
+
+## All-in-one option
+
+The file `docker-compose-conductor.yml` will clone the Conductor 
+repository, build the sources and create local Docker images for
+Conductor and Conductor UI.
+It will then set up all required containers and network configuration 
+required to work with Conductor locally.
+
+When running the first time start by executing a `build` of required containers
+as the Conductor project does not provide official Docker containers.
+
+From the project root folder (the same this file is in) run
+```shell
+docker compose -f docker-compose-conductor.yml build
+```
+
+This process will take a few minutes.
+
+Afterwards start the containers using Docker Compose. For development
+purposes it is recommended to not start the containers as in daemon mode 
+(`-d` option) but instead in foreground to see potential errors.
+
+To start run
+```shell
+docker compose -f docker-compose-conductor.yml up
+```
+
+To stop the containers either hit `Ctrl+C` in the terminal where 
+docker compose is running, or on a second terminal execute the 
+`down` command as this:
+
+```shell
+docker compose -f docker-compose-conductor.yml down
+```
+
+## From Conductor Docker Compose
+
+For this option you will need to clone the [Conductor repository](https://github.com/Netflix/conductor) and you will be running the docker compose file provided within the Conductor repo.
 
 Once you have cloned the docker compose files. You will need to make some modifications to ensure the PoC is working:
 
