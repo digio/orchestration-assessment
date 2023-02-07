@@ -24,6 +24,3 @@ function run_query {
 run_query "populate_tasks" $task_json_path $task_url
 run_query "populate_main_workflow" $main_workflow_json_path $workflow_url
 run_query "populate_sub_workflow" $sub_workflow_json_path $workflow_url
-
-"$SHELL"
-exit 0

@@ -32,6 +32,3 @@ create_file
 populate_request_bodies $task_json_path $task_tag
 populate_request_bodies $sub_workflow_json_path $sub_workflow_tag
 populate_request_bodies $main_workflow_json_path $workflow_tag
-
-"$SHELL"
-exit 0
