@@ -14,6 +14,9 @@ If you are having issues, that would be a good place to search in case we alread
 
 You can either clone the repo and run Conductor in local command line processes, download a packaged JAR file that will run the Conductor for you, or you can spin up a container with all the relevant services through their docker compose option.
 
+We have also provided a docker compose file that will spin up Conductor in containers locally for you by pulling the repo and building it. Choose your preferred option and follow the instructions below.
+
+
 Instructions can be found here:
 
 [Running locally or with a JAR](https://conductor.netflix.com/gettingstarted/local.html)
@@ -71,6 +74,13 @@ If this happens consider to increase the `healthcheck -> retries` property
 in the docker-compose.yaml file for the elasticsearch service from `12` to
 `24` or more.
 
+#### Using OpenSearch over ElasticSearch
+As ElasticSearch has some issues like the Apple Silicon limitation and
+higher resource requirements one can choose to use OpenSearch as an
+alternative. OpenSearch is an in-place replacement for ElasticSearch and
+fully API-compatible.
+See the `docker-compose-conductor.uml` for more details on how to set it up.
+
 #### Error `vm.max_map_count`
 
 Depending on the current Docker VM configuration the error<br/>
@@ -81,13 +91,9 @@ To increase that setting for the Docker VM use the `rdctl` command line tool<br/
 `rdctl shell sudo sysctl -w vm.max_map_count=262144`
 
 
-### Local
+## Docker compose
 
-TBD
-
-### Docker compose
-
-### All-in-one option
+## All-in-one option
 
 The file `docker-compose-conductor.yml` will clone the Conductor 
 repository, build the sources and create local Docker images for
@@ -122,7 +128,9 @@ docker compose is running, or on a second terminal execute the
 docker compose -f docker-compose-conductor.yml down
 ```
 
-### Manual build option
+## From Conductor Docker Compose
+
+For this option you will need to clone the [Conductor repository](https://github.com/Netflix/conductor) and you will be running the docker compose file provided within the Conductor repo.
 
 Once you have cloned the docker compose files. You will need to make some modifications to ensure the PoC is working:
 

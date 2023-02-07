@@ -37,6 +37,8 @@ We use Mailtrap and nodemailer in our notification service to send out emails to
 
 You will need to create an account with Mailtrap, it is free: https://mailtrap.io/home. You can use whatever email or other entry point (Google, Github, etc) as you wish. This is exposing an SMTP to hit and monitor for you. It doesn't use your email to send the emails, only to log in to Mailtrap. Mailtrap has a UI that will show you the received emails.
 
+Once you create your account you will be given a couple of keys by Mailtrap. You will need to update these keys in the repo for the project to work.
+
 Next create a copy of the file `env.sample` called `.env` (notice the leading dot)
 and update the two environemnt variables inside the file.
 
