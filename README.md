@@ -38,8 +38,10 @@ We use Mailtrap and nodemailer in our notification service to send out emails to
 You will need to create an account with Mailtrap, it is free: https://mailtrap.io/home. You can use whatever email or other entry point (Google, Github, etc) as you wish. This is exposing an SMTP to hit and monitor for you. It doesn't use your email to send the emails, only to log in to Mailtrap. Mailtrap has a UI that will show you the received emails.
 
 Next create a copy of the file `env.sample` called `.env` (notice the leading dot)
-and update the two environemnt variables inside the file with your
-Mailtrap credentials obtained.
+and update the two environemnt variables inside the file.
+
+The necessary credentials can be found in the Mailtrap Web UI in
+Email Testing -> Inboxes -> My Inbox -> Show Credentials.
 
 Use the Mailtrap UI to monitor any new emails sent out by our workflows.
 
