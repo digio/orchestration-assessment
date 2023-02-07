@@ -89,8 +89,11 @@ TBD
 
 ### All-in-one option
 
-The file `docker-compose-conductor.yml` will build and set up all the
-required containers and network configuration to explore Conductor locally.
+The file `docker-compose-conductor.yml` will clone the Conductor 
+repository, build the sources and create local Docker images for
+Conductor and Conductor UI.
+It will then set up all required containers and network configuration 
+required to work with Conductor locally.
 
 When running the first time start by executing a `build` of required containers
 as the Conductor project does not provide official Docker containers.
