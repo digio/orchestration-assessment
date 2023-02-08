@@ -1,7 +1,9 @@
 version: '3.7'
 
 volumes:
-  opensearch-data1:
+  opensearch-data-node1:
+    driver: local
+  redis-data:
     driver: local
 
 networks:
@@ -11,13 +13,15 @@ networks:
 services:
   conductor-server:
     environment:
-      - CONFIG_PROP=config-local.properties
+      - CONFIG_PROP=/config-local.properties
     image: conductor:server
     build:
       context: .
       dockerfile: docker/Dockerfile-conductor
     networks:
       - conductor-poc-network
+    volumes:
+      - ./conductor/config-local.properties:/app/config/config-local.properties
     ports:
       - 8080:8080
     healthcheck:
@@ -27,6 +31,7 @@ services:
       retries: 12
     links:
       - opensearch:es
+      - redis:redis
     depends_on:
       opensearch:
         condition: service_healthy
@@ -52,14 +57,14 @@ services:
 #    stdin_open: true
 
   opensearch:
-    image: opensearchproject/opensearch:latest
+    image: opensearchproject/opensearch:1
     container_name: opensearch-node1
     environment:
       - cluster.name=opensearch-cluster
       - node.name=opensearch-node1
-      - discovery.seed_hosts=opensearch-node1
-      - cluster.initial_cluster_manager_nodes=opensearch-node1
+      - discovery.type=single-node
       - bootstrap.memory_lock=true
+      - DISABLE_SECURITY_PLUGIN=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -69,9 +74,10 @@ services:
         soft: 65536
         hard: 65536
     volumes:
-      - opensearch-data1:/usr/share/opensearch/data # Creates volume called opensearch-data1 and mounts it to the container
+      - opensearch-data-node1:/usr/share/opensearch/data # Creates volume called opensearch-data1 and mounts it to the container
     ports:
       - 9200:9200 # REST API
+      - 9300:9300
       - 9600:9600 # Performance Analyzer
     networks:
       - conductor-poc-network
@@ -81,17 +87,15 @@ services:
       timeout: 5s
       retries: 24
 
-  opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:latest
-    container_name: opensearch-dashboards
-    ports:
-      - 5601:5601
-    expose:
-      - "5601"
+  redis:
+    image: 'bitnami/redis:latest'
+    platform: "linux/amd64"
     environment:
-      OPENSEARCH_HOSTS: '["https://opensearch-node1:9200"]'
+      - ALLOW_EMPTY_PASSWORD=yes
     networks:
       - conductor-poc-network
+    volumes:
+      - redis-data:/bitnami/redis/data
 
   express-app:
     container_name: express-app
@@ -100,12 +104,8 @@ services:
       - NODE_ENV=development
       - POC_EMAIL_USER=${POC_EMAIL_USER}
       - POC_EMAIL_PASS=${POC_EMAIL_PASS}
-      # - ORCHESTRATION_TOOL=temporal
-      - ORCHESTRATION_TOOL=conductor
-      - CONDUCTOR_HOST=conductor-host
-      # - CONDUCTOR_HOST=localhost
-      - TEMPORAL_HOST=localhost
-      # - TEMPORAL_HOST=temporal-host
+      - CONDUCTOR_HOST=conductor-server
+      - ORCHESTRATION_TOOL=${ORCHESTRATION_TOOL}
     networks:
       - conductor-poc-network
     build:

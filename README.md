@@ -31,6 +31,17 @@ This is a standard out-of-the-box express app with plain Javascript and PUG ui l
 
 ## Setup
 
+### Local `.env` file
+
+A `.env` file is used for local environment-specific settings.
+This file is NOT tracked in Git.
+
+To start copy the file `env.sample` and then edit the new file.
+```shell
+cp env.sample .env
+```
+Uncomment the correct line for the orchestration tool you want to work with.
+
 ### Mailtrap
 
 We use Mailtrap and nodemailer in our notification service to send out emails to the "customer" and "banker". 
@@ -39,8 +50,8 @@ You will need to create an account with Mailtrap, it is free: https://mailtrap.i
 
 Once you create your account you will be given a couple of keys by Mailtrap. You will need to update these keys in the repo for the project to work.
 
-Next create a copy of the file `env.sample` called `.env` (notice the leading dot)
-and update the two environemnt variables inside the file.
+Next edit the `.env` file created earlier and update the two environment 
+variables `POC_EMAIL_USER` and `POC_EMAIL_PASS`.
 
 The necessary credentials can be found in the Mailtrap Web UI in
 Email Testing -> Inboxes -> My Inbox -> Show Credentials.
