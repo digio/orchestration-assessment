@@ -110,7 +110,7 @@ services:
       - conductor-poc-network
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile-demo-app
     expose:
       - "4000"
     ports:
