@@ -1,7 +1,8 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const router = express.Router();
-const { WorkflowClient } = require('@temporalio/client');
+
+const { getTemporalWorkflowClient } = require('../orchestration/client');
 
 const { SIGNAL } = require('../constants');
 
@@ -28,16 +29,15 @@ async function completeConductorManualTask(workflowInstanceId, taskId) {
 }
 
 async function completeTemporalManualTask(workflowInstanceId) {
-  const client = new WorkflowClient();
-  const handle = client.getHandle(workflowInstanceId);
+  const handle = (await getTemporalWorkflowClient()).getHandle(workflowInstanceId);
 
   await handle.signal(SIGNAL.MANUAL_APPROVAL_UNBLOCK);
 }
 
-router.get('/', function (req, res) {
+router.get('/', function(req, res) {
   console.log('Low score approved request received: ', { query: req.query, body: req.body });
   // console.debug('Full request received: ', req);
-  const userName = req.query.name;
+  const userName = req.query.userName;
   const credit = req.query.credit;
   const workflowInstanceId = req.query.workflowInstanceId;
   const taskId = req.query.taskId;
@@ -49,8 +49,8 @@ router.get('/', function (req, res) {
       console.log('Manual task marked as complete successfully: ', workflowInstanceId, taskId, response);
     });
   } else {
-    completeTemporalManualTask(workflowInstanceId).then((response) => {
-      console.log('Manual task marked as complete successfully: ', workflowInstanceId, response);
+    completeTemporalManualTask(workflowInstanceId).then(() => {
+      console.log('Manual task marked as complete successfully: ', workflowInstanceId);
     });
   }
 

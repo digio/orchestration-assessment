@@ -14,7 +14,7 @@ services:
       - TEMPORAL_HOST=localhost
       # - TEMPORAL_HOST=temporal-host
     networks:
-      - temporal-poc-network
+      - temporal-network
       - conductor-poc-network
     build:
       context: .
@@ -29,6 +29,6 @@ networks:
   conductor-poc-network:
     name: conductor-poc-network
     external: true
-  temporal-poc-network:
-    name: temporal-poc-network
+  temporal-network:
+    name: temporal-network
     external: true

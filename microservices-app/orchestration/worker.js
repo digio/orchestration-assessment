@@ -1,18 +1,25 @@
-var { Worker, NativeConnection } = require('@temporalio/worker');
-var activities = require('./activities');
+const { Worker, NativeConnection } = require('@temporalio/worker');
+const isDocker = require('is-docker');
 
+const activities = require('./activities');
+const { CONFIG } = require('../constants');
+
+/**
+ * The temporal worker connects to the service and runs workflows and activities.
+ *
+ * @see https://typescript.temporal.io/api/namespaces/worker
+ * @returns {Promise<void>}
+ */
 async function run() {
-  // TODO fix docker connection not working
-  // const connectionOptions = {
-  //   address: 'temporal-host:7233',
-  //   // address: 'temporal:7233',
-  // };
-  // const connection = await NativeConnection.connect(connectionOptions);
+  const connection = await NativeConnection.connect(isDocker() ? {
+    address: CONFIG.TEMPORAL_SERVER_ADDRESS,
+  } : undefined);
+
   const worker = await Worker.create({
-    // connection,
+    connection,
     workflowsPath: require.resolve('./workflow'),
     activities,
-    taskQueue: 'credit-card-app-queue',
+    taskQueue: CONFIG.TEMPORAL_TASK_QUEUE,
   });
 
   await worker.run();
