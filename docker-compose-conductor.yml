@@ -104,7 +104,6 @@ services:
       - NODE_ENV=development
       - POC_EMAIL_USER=${POC_EMAIL_USER}
       - POC_EMAIL_PASS=${POC_EMAIL_PASS}
-      - ORCHESTRATION_TOOL=conductor
       - CONDUCTOR_HOST=conductor-server
     networks:
       - conductor-poc-network
