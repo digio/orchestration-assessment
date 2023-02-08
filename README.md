@@ -50,7 +50,8 @@ You will need to create an account with Mailtrap, it is free: https://mailtrap.i
 
 Once you create your account you will be given a couple of keys by Mailtrap. You will need to update these keys in the repo for the project to work.
 
-Next edit the `.env` file created earlier and update the two environemnt variables inside the file.
+Next edit the `.env` file created earlier and update the two environment 
+variables `POC_EMAIL_USER` and `POC_EMAIL_PASS`.
 
 The necessary credentials can be found in the Mailtrap Web UI in
 Email Testing -> Inboxes -> My Inbox -> Show Credentials.

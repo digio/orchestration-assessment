@@ -39,7 +39,7 @@ and the demo POC app:
 ### Potential issues
 
 #### Apple Silicon Mac
-If you're running an Apple Silicon Mac (M1, M2 etc) you will have to
+If you're running an Apple Silicon Mac (M1, M2 etc.) you will have to
 explicitly set the container image platform for the Elasticsearch
 used by Conductor to `linux/amd64` as there is no ARM64 image available
 for Elasticsearch 6.8.
@@ -151,7 +151,7 @@ Once you have cloned the docker compose files. You will need to make some modifi
 2. To allow the Microservices Stub to recognise the Conductor container network, add the following to the Conductor docker compose file.
    Under the `conductor-server` service, add our PoC's shared external network and give the server a name so we can find it:
    Furthermore the Conductor Java server comes in a default, unconfigured state.
-3. Add a vloume-mount to the `conductor/config-local.properties`.
+3. Add a volume-mount to the `conductor/config-local.properties`.
 3. ```
    conductor-server:
     environment:
