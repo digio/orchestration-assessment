@@ -1,10 +1,14 @@
-var express = require('express');
-var fetch = require('node-fetch');
-var startWorkflow = require('../orchestration/client');
-var router = express.Router();
+const express = require('express');
+const fetch = require('node-fetch');
 
-async function startTemporalApplicationWorkflow(userName, email, credit) {
-  await startWorkflow(userName, email, credit);
+const router = express.Router();
+
+function startTemporalApplicationWorkflow(userName, email, credit) {
+  const params = { userName, email, credit };
+  const { run } = require('../orchestration/client');
+  const { creditCardWorkflow } = require('../orchestration/workflow');
+
+  return run(creditCardWorkflow, params);
 }
 
 async function startConductorApplicationWorkflow(userName, email, credit) {

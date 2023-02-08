@@ -30,6 +30,29 @@ const {
 
 const manualApprovalUnblock = wf.defineSignal(SIGNAL.MANUAL_APPROVAL_UNBLOCK);
 
+/**
+ * Creates a signal used to pause the workflow while the manual approval process
+ * is in place for customers with a low credit score.
+ * @see https://typescript.temporal.io/api/namespaces/workflow#signals-and-queries
+ *
+ * @returns {Promise<void>}
+ */
+async function waitForManualApproveUnblock() {
+  let isBlocked = true;
+
+  wf.setHandler(manualApprovalUnblock, () => void (isBlocked = false));
+
+  try {
+    await wf.condition(() => !isBlocked);
+    isBlocked = true;
+  } catch (err) {
+    if (!(err instanceof wf.CancelledFailure)) {
+      throw err;
+    }
+    console.log('Manual approval cancelled');
+  }
+}
+
 async function creditCardWorkflow({ userName: name, email, credit }) {
   console.log('Starting new workflow execution', { name, email, credit });
 
@@ -46,12 +69,10 @@ async function creditCardWorkflow({ userName: name, email, credit }) {
   //  workflowId and runId and await the response of the banker
   if (creditScore === CREDIT_CHECK_SCORE.LOW) {
     console.log('\n\n🤘 STEP: MANUAL APPROVAL OF APPLICATION');
-    let requiresManualApproval = true;
     await notifyBankerOfManualApprovalRequired({ crmId, name, credit });
 
     //  Awaits manual intervention from email sent to banker with timeout of 1 hour
-    wf.setHandler(manualApprovalUnblock, () => void (requiresManualApproval = false));
-    await wf.condition(() => !requiresManualApproval);
+    await waitForManualApproveUnblock();
 
   //  High credit score means we can attempt to up-sell a higher limit
   //  because this will essentially make us more money in the long run

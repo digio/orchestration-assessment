@@ -5,10 +5,10 @@
   "scripts": {
     "serve": "node ./bin/www",
     "start": "nodemon ./bin/www",
+    "start:temporal": "concurrently \"node ./bin/www\" \"node ./orchestration/worker\" --kill-others",
+    "start:temporal:watch": "concurrently \"nodemon ./bin/www\" \"nodemon ./orchestration/worker\" --kill-others",
     "start:watch": "browser-sync start --config bs-config.js",
-    "dev": "concurrently --kill-others \"npm run start\" \"npm run start:watch\"",
-    "orchestrate": "node orchestration/worker.js",
-    "orchestrate:watch": "nodemon orchestration/worker.js"
+    "dev": "concurrently --kill-others \"npm run start\" \"npm run start:watch\""
   },
   "main": "./bin/www",
   "dependencies": {
@@ -22,6 +22,7 @@
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
+    "is-docker": "^2.2.1",
     "jade": "~1.11.0",
     "morgan": "~1.9.1",
     "node-fetch": "^2.6.8",
