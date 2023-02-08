@@ -150,7 +150,9 @@ Once you have cloned the docker compose files. You will need to make some modifi
    ```
 2. To allow the Microservices Stub to recognise the Conductor container network, add the following to the Conductor docker compose file.
    Under the `conductor-server` service, add our PoC's shared external network and give the server a name so we can find it:
-   ```
+   Furthermore the Conductor Java server comes in a default, unconfigured state.
+3. Add a vloume-mount to the `conductor/config-local.properties`.
+3. ```
    conductor-server:
     environment:
       - CONFIG_PROP=config-local.properties
@@ -158,10 +160,13 @@ Once you have cloned the docker compose files. You will need to make some modifi
     build:
       context: ../
       dockerfile: docker/server/Dockerfile
+   # Add/change the following lines
+    volumes:
+      - ./conductor/config-local.properties:/app/config/config-local.properties
     networks:
       - internal
-      - conductor-poc-network   <==== ADD THIS LINE HERE
-    hostname: conductor-host    <==== ADD THIS LINE HERE
+      - conductor-poc-network
+    hostname: conductor-host 
     ports:
       - 8080:8080
    ```

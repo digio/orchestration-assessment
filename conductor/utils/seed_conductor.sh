@@ -17,8 +17,7 @@ function run_query {
   -H "Accept: */*" \
   -H "Content-Type:application/json" \
   -X POST $url --data @$data)
-  echo ''
-  echo -e "Result of $process_name:\n$result\n"
+  echo -e "=nResult of $process_name:\n$result\n"
 }
 
 run_query "populate_tasks" $task_json_path $task_url

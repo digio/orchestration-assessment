@@ -9,8 +9,7 @@ services:
       - POC_EMAIL_PASS=${POC_EMAIL_PASS}
       # - ORCHESTRATION_TOOL=temporal
       - ORCHESTRATION_TOOL=conductor
-      - CONDUCTOR_HOST=conductor-host
-      # - CONDUCTOR_HOST=localhost
+      - CONDUCTOR_HOST=localhost
       - TEMPORAL_HOST=localhost
       # - TEMPORAL_HOST=temporal-host
     networks:
