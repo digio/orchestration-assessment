@@ -1,16 +1,31 @@
-FROM node:14-alpine
+FROM node:14-alpine AS builder
 
 LABEL maintainer="DigIO"
 
+ARG CONDUCTOR_RELEASE
+
+# Install CLI tools
 RUN apk update && apk add --no-cache python3 py3-pip make g++ git
 
 # Download latest release sources
-RUN git clone https://github.com/Netflix/conductor.git
-
+RUN git clone https://github.com/Netflix/conductor.git && cd conductor && git checkout tags/v${CONDUCTOR_RELEASE}
 
 WORKDIR /conductor/ui
 
+# Build the server on run
+
 # Installs all node packages. Cached unless package.json changes
 RUN yarn install
+RUN yarn build
+
+
+FROM node:14-alpine
+WORKDIR /app
+
+COPY --from=builder /conductor/ui /app
 
 CMD [ "yarn", "start" ]
+
+
+
+

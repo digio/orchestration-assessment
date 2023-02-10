@@ -2,11 +2,17 @@ FROM eclipse-temurin:11-jdk-focal AS builder
 
 LABEL maintainer="DigIO"
 
+ARG CONDUCTOR_RELEASE
+
 # Install CLI tools
 RUN apt update && apt install -y git
 
 # Download latest release sources
-RUN git clone https://github.com/Netflix/conductor.git && cd conductor && git checkout tags/v3.13.3
+RUN git clone https://github.com/Netflix/conductor.git && cd conductor && git checkout tags/v${CONDUCTOR_RELEASE}
+
+# Patch the server build.gradle to enabled Postgres persistence
+RUN sed -i -e "s/dependencies {/dependencies {\n\truntimeOnly 'com.netflix.conductor:conductor-postgres-persistence:${CONDUCTOR_RELEASE}'/"\
+    /conductor/server/build.gradle
 
 WORKDIR /conductor
 

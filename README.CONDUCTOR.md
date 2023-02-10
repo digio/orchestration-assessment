@@ -101,6 +101,13 @@ Conductor and Conductor UI.
 It will then set up all required containers and network configuration 
 required to work with Conductor locally.
 
+The following containers will be started:
+* OpenSearch for data indexing
+* PostgreSQL for data persistence
+* Conductor Server build with PostgreSQL connector
+* Conductor UI
+* Express demo app
+
 When running the first time start by executing a `build` of required containers
 as the Conductor project does not provide official Docker containers.
 
