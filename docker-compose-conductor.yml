@@ -3,7 +3,7 @@ version: '3.7'
 volumes:
   opensearch-data-node1:
     driver: local
-  redis-data:
+  pgdata-conductor:
     driver: local
 
 networks:
@@ -11,6 +11,28 @@ networks:
     name: conductor-poc-network
 
 services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=conductor
+      - POSTGRES_PASSWORD=conductor
+    volumes:
+      - pgdata-conductor:/var/lib/postgresql/data
+    networks:
+      - conductor-poc-network
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/5432'
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+
   conductor-server:
     environment:
       - CONFIG_PROP=/config-local.properties
@@ -18,6 +40,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile-conductor
+      args:
+        - CONDUCTOR_RELEASE=3.13.3
     networks:
       - conductor-poc-network
     volumes:
@@ -31,7 +55,7 @@ services:
       retries: 12
     links:
       - opensearch:es
-      - redis:redis
+      - postgres:postgresdb
     depends_on:
       opensearch:
         condition: service_healthy
@@ -48,6 +72,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile-conductor-ui
+      args:
+        - CONDUCTOR_RELEASE=3.13.3
     networks:
       - conductor-poc-network
     ports:
@@ -86,16 +112,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 24
-
-  redis:
-    image: 'bitnami/redis:latest'
-    platform: "linux/amd64"
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    networks:
-      - conductor-poc-network
-    volumes:
-      - redis-data:/bitnami/redis/data
 
   express-app:
     container_name: express-app
