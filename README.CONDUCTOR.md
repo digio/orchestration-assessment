@@ -151,7 +151,7 @@ Once you have cloned the docker compose files. You will need to make some modifi
       - transport.host=0.0.0.0
       - discovery.type=single-node
       - xpack.security.enabled=false
-    platform: "linux/amd64"  <==== ADD THIS LINE HERE
+    platform: "linux/amd64"  # <==== ADD THIS LINE HERE
     volumes:
       - esdata-conductor:/usr/share/elasticsearch/data
    ```
@@ -180,9 +180,9 @@ Once you have cloned the docker compose files. You will need to make some modifi
    Then at the bottom of the file, add the external network to the config:
    ```
    networks:
-    conductor-poc-network:   <==== ADD THIS LINE HERE
-      name: conductor-poc-network   <==== ADD THIS LINE HERE
-      external: true   <==== ADD THIS LINE HERE
+    conductor-poc-network:   # <==== ADD THIS LINE HERE
+      name: conductor-poc-network   # <==== ADD THIS LINE HERE
+      external: true   # <==== ADD THIS LINE HERE
     internal:
    ```
 3. To run the container, go to the root of the Conductor repo:
@@ -192,14 +192,23 @@ Once you have cloned the docker compose files. You will need to make some modifi
    ```
 4. To safely stop and delete the container (remember that this means you will need to re-seed; instructions below), run from the root of the Conductor repo:
    ```
-   docker-compose down
+   docker compose down
    ```
-5. If you are having issues with Elastic Search spinning up properly, refer to this Jira ticket: https://mantelgroup.atlassian.net/browse/OTP-34. The details and reasons are in the ticket. In case you have no access to Jira, here are some of the steps to fix the corrupt container are (in no particular order or level of effectiveness):
+5. If you are having issues with Elastic Search spinning up properly, 
+6. refer to this Jira ticket: https://mantelgroup.atlassian.net/browse/OTP-34. The details and reasons are in the ticket. In case you have no access to Jira, here are some of the steps to fix the corrupt container are (in no particular order or level of effectiveness):
    1. to restart Docker or equivalent
-   2. to first `docker-compose up elasticsearch -d` and then compose regularly `docker-compose up -d`
-   3. run `docker-compose build`
+   2. to first `docker compose up elasticsearch -d` and then compose regularly `docker-compose up -d`
+   3. run `docker compose build`
    4. run `docker build -f docker/server/Dockerfile -t conductor:server .`
-   5. replace Elastic Search with Open Search by: HENDRIK ADD HERE
+   5. Alternatively you can also replace ElasticSearch with OpenSearch, check the 
+      service *opensearch* in the `docker-compose-conductor.yml` file for more details.
+   6. To enable persistence via PostgreSQL two additional steps are required:
+      - before building the Conductor sources edit the `build.gradle` file 
+         in `server` and add the following to the `dependencies` section:
+         ```groovy
+        runtimeOnly 'com.netflix.conductor:conductor-postgres-persistence:3.13.3' ```
+      - then rebuild the Docker image for Conductor server
+      - in addition the correct Spring Data properties have to be set in the `config-local.properties`
 
 ## Creating the workflows
 
