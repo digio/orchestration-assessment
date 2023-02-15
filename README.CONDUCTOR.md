@@ -95,10 +95,10 @@ To increase that setting for the Docker VM use the `rdctl` command line tool<br/
 
 ## All-in-one option
 
-The file `docker-compose-conductor.yml` will clone the Conductor 
+The file `docker-compose-conductor.yml` will clone the Conductor
 repository, build the sources and create local Docker images for
 Conductor and Conductor UI.
-It will then set up all required containers and network configuration 
+It will then set up all required containers and network configuration
 required to work with Conductor locally.
 
 The following containers will be started:
@@ -119,7 +119,7 @@ docker compose -f docker-compose-conductor.yml build
 This process will take a few minutes.
 
 Afterwards start the containers using Docker Compose. For development
-purposes it is recommended to not start the containers as in daemon mode 
+purposes it is recommended to not start the containers as in daemon mode
 (`-d` option) but instead in foreground to see potential errors.
 
 To start run
@@ -127,8 +127,8 @@ To start run
 docker compose -f docker-compose-conductor.yml up
 ```
 
-To stop the containers either hit `Ctrl+C` in the terminal where 
-docker compose is running, or on a second terminal execute the 
+To stop the containers either hit `Ctrl+C` in the terminal where
+docker compose is running, or on a second terminal execute the
 `down` command as this:
 
 ```shell
@@ -194,25 +194,40 @@ Once you have cloned the docker compose files. You will need to make some modifi
    ```
    docker compose down
    ```
-5. If you are having issues with Elastic Search spinning up properly, 
+5. If you are having issues with Elastic Search spinning up properly,
 6. refer to this Jira ticket: https://mantelgroup.atlassian.net/browse/OTP-34. The details and reasons are in the ticket. In case you have no access to Jira, here are some of the steps to fix the corrupt container are (in no particular order or level of effectiveness):
    1. to restart Docker or equivalent
    2. to first `docker compose up elasticsearch -d` and then compose regularly `docker-compose up -d`
    3. run `docker compose build`
    4. run `docker build -f docker/server/Dockerfile -t conductor:server .`
-   5. Alternatively you can also replace ElasticSearch with OpenSearch, check the 
+   5. Alternatively you can also replace ElasticSearch with OpenSearch, check the
       service *opensearch* in the `docker-compose-conductor.yml` file for more details.
    6. To enable persistence via PostgreSQL two additional steps are required:
-      - before building the Conductor sources edit the `build.gradle` file 
-         in `server` and add the following to the `dependencies` section:
+      - before building the Conductor sources edit the `build.gradle` file
+        in `server` and add the following to the `dependencies` section:
          ```groovy
-        runtimeOnly 'com.netflix.conductor:conductor-postgres-persistence:3.13.3' ```
-      - then rebuild the Docker image for Conductor server
-      - in addition the correct Spring Data properties have to be set in the `config-local.properties`
+        runtimeOnly 'com.netflix.conductor:conductor-postgres-persistence:3.13.3' 
+        ```
+      - then rebuild the Docker image for Conductor server:
+         - if you're using the docker-compose.yml file from the Conductor
+           source repository just run:
+        ```shell
+        docker compose build conductor-server
+        ```
+      - in addition the following Spring Data properties have to be set
+        in the `config-local.properties` for Conductor to use PostgreSQL:
+      ```properties
+      conductor.db.type=postgres
+      spring.datasource.url=jdbc:postgresql://postgres:5432/conductor
+      spring.datasource.username=conductor
+      spring.datasource.password=conductor
+      spring.datasource.hikari.maximum-pool-size=10
+      spring.datasource.hikari.minimum-idle=2
+      ```
 
 ## Creating the workflows
 
-Once Conductor is up and running, you will need to make sure that you populate your workflow and task definitions. This is done by sending requests to the Conductor server, and it handles everything else for you. 
+Once Conductor is up and running, you will need to make sure that you populate your workflow and task definitions. This is done by sending requests to the Conductor server, and it handles everything else for you.
 
 For instructions on how to "seed" or populate Conductor refer to: `conductor-utils/README.md`.
 
@@ -235,7 +250,7 @@ Then run the app. Refer to the `Setup` section for `Web App` in the main `Readme
 
 ### Start the Demo
 
-To start the Demo, go to the web app site at http://localhost:4000/ and submit a new credit card application form. That kicks off your Conductor workflow execution! 
+To start the Demo, go to the web app site at http://localhost:4000/ and submit a new credit card application form. That kicks off your Conductor workflow execution!
 
 **Note** that you can kick off the workflow by also:
 * sending a POST request to the server. Have a look at sample calls in the Postman collection. First make sure you generate the collection and export it as per the Reade at `postman/README.md`.
