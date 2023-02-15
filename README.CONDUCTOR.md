@@ -206,24 +206,9 @@ Once you have cloned the docker compose files. You will need to make some modifi
       - before building the Conductor sources edit the `build.gradle` file 
          in `server` and add the following to the `dependencies` section:
          ```groovy
-        runtimeOnly 'com.netflix.conductor:conductor-postgres-persistence:3.13.3' 
-        ```
-      - then rebuild the Docker image for Conductor server:
-         - if you're using the docker-compose.yml file from the Conductor
-        source repository just run:
-        ```shell
-        docker compose build conductor-server
-        ```
-      - in addition the following Spring Data properties have to be set 
-      in the `config-local.properties` for Conductor to use PostgreSQL:
-      ```properties
-      conductor.db.type=postgres
-      spring.datasource.url=jdbc:postgresql://postgres:5432/conductor
-      spring.datasource.username=conductor
-      spring.datasource.password=conductor
-      spring.datasource.hikari.maximum-pool-size=10
-      spring.datasource.hikari.minimum-idle=2
-      ```
+        runtimeOnly 'com.netflix.conductor:conductor-postgres-persistence:3.13.3' ```
+      - then rebuild the Docker image for Conductor server
+      - in addition the correct Spring Data properties have to be set in the `config-local.properties`
 
 ## Creating the workflows
 
