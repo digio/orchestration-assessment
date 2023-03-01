@@ -3,6 +3,7 @@ This Readme is specific for running Temporal in this PoC project.
 # Temporal
 
 ## Prerequisites
+
 * This repo cloned somewhere on your machine
 * Node version 16 or greater
 * The Temporal Cluster cloned and running on your machine (see below)
@@ -10,7 +11,7 @@ This Readme is specific for running Temporal in this PoC project.
 
 ## Getting started
 
-This POC has three elements required to execute workflows in Temporal:
+This PoC has three elements required to execute workflows in Temporal:
 
 1. **The Temporal Cluster** - A service running independently of the Microservice App.
 2. **The Temporal worker** - An independent process responsible for executing code in response to a task and responding to the Temporal Cluster with results.
@@ -45,6 +46,21 @@ The Temporal Worker is an application that runs in the same container as the Mic
 
 The Microservices App simulates a real world microservice, and imports the Temporal SDK to connect to both the Temporal Server and the Temporal Worker. The workflows and activities used in this POC live in the `/orchestration` folder and are imported into both the Microservice App and Temporal Worker.
 
+### Running in Docker
+
+Starting the Microservices App and Temporal Worker using Docker, mounts the app volume into the container so that you still have the ability to change files without having to re-build the container with every change. Ensure you've provided your Mailtrap.io `username` and `password` as environment variables when running this command.
+
+```bash
+# Build the Microservices App container and Temporal worker
+$ docker-compose -f ./docker-compose.yml -f ./docker-compose-temporal-worker.yml build
+
+# Start the Microservices App and Temporal worker
+$ ORCHESTRATION_TOOL=temporal \
+  POC_EMAIL_USER=<mailtrap_username> \
+  POC_EMAIL_PASS=<mailtrap_password> \
+  docker-compose -f ./docker-compose.yml -f ./docker-compose-temporal-worker.yml up
+```
+
 ### Running locally
 
 Starting the Microservices App and Temporal Worker locally provides the benefit of being able to play around with the code and make changes with a faster feedback cycle. Ensure you've provided your Mailtrap.io `username` and `password` as environment variables when running this command.
@@ -59,19 +75,10 @@ $ POC_EMAIL_USER=<mailtrap_username> \
   npm run start:temporal:watch  
 ```
 
-### Running in Docker
+### Potential Issues
+#### Error occurred when executing the worker TransportError
 
-Starting the Microservices App and Temporal Worker using Docker mounts the app volume into the container so that you still have the ability to change files without having to re-build the container with every change. Ensure you've provided your Mailtrap.io `username` and `password` as environment variables when running this command.
-
-```bash
-# Build the Microservices App container
-$ docker-compose -f ./docker-compose.temporal.yml build
-
-# Start the Microservices App
-$ POC_EMAIL_USER=<mailtrap_username> \
-  POC_EMAIL_PASS=<mailtrap_password> \
-  docker-compose -f ./docker-compose.temporal.yml up
-```
+If you see this error when starting the PoC via docker compose, it means that you haven't started the Temporal Cluster, and the worker has nothing to connect to. Please see [Temporal Cluster](#temporal-cluster) for details on how to start this.
 
 ---
 
