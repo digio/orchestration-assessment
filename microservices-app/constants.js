@@ -9,7 +9,8 @@ const SIGNAL = {
 };
 
 const CONFIG = {
-    MICROSERVICES_BASE_URL: 'http://localhost:4000',
+    CONDUCTOR_SERVER_BASE_URL: 'http://conductor-server:8080',
+    MICROSERVICES_BASE_URL: 'http://express-app-host:4000',
     TEMPORAL_SERVER_ADDRESS: 'temporal:7233',
     TEMPORAL_TASK_QUEUE: 'credit-card-app-queue',
     TEMPORAL_WORKFLOW_ID_PREFIX: 'credit-card-workflow',

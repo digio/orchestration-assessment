@@ -8,6 +8,4 @@ RUN npm i
 
 COPY microservices-app/ .
 
-EXPOSE 4000
-
-CMD [ "npm", "run", "start:temporal" ]
+CMD [ "node", "./orchestration/worker" ]

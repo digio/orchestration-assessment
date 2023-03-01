@@ -121,7 +121,7 @@ services:
       - POC_EMAIL_USER=${POC_EMAIL_USER}
       - POC_EMAIL_PASS=${POC_EMAIL_PASS}
       - CONDUCTOR_HOST=conductor-server
-      - ORCHESTRATION_TOOL=${ORCHESTRATION_TOOL}
+      - ORCHESTRATION_TOOL=conductor
     networks:
       - conductor-poc-network
     build:

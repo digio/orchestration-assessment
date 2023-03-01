@@ -4,7 +4,7 @@ const router = express.Router();
 
 const { getTemporalWorkflowClient } = require('../orchestration/client');
 
-const { SIGNAL } = require('../constants');
+const { SIGNAL, CONFIG } = require('../constants');
 
 async function completeConductorManualTask(workflowInstanceId, taskId) {
   try {
@@ -13,7 +13,7 @@ async function completeConductorManualTask(workflowInstanceId, taskId) {
       taskId,
       status: 'COMPLETED'
     }
-    const url = `http://${process.env.CONDUCTOR_HOST}:8080/api/tasks`;
+    const url = `${CONFIG.CONDUCTOR_SERVER_BASE_URL}/api/tasks`;
     const params = {
       method: 'post',
       body: JSON.stringify(body),

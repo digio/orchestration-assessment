@@ -1,6 +1,8 @@
 const express = require('express');
 const fetch = require('node-fetch');
 
+const { CONFIG } = require('../constants');
+
 const router = express.Router();
 
 function startTemporalApplicationWorkflow(userName, email, credit) {
@@ -18,7 +20,7 @@ async function startConductorApplicationWorkflow(userName, email, credit) {
       email,
       credit
     }
-    const url = `http://${process.env.CONDUCTOR_HOST}:8080/api/workflow/new_credit_card_application`;
+    const url = `${CONFIG.CONDUCTOR_SERVER_BASE_URL}/api/workflow/new_credit_card_application`;
     const params = {
       method: 'post',
       body: JSON.stringify(body),
@@ -37,9 +39,12 @@ async function startApplicationWorkflow(userName, email, credit) {
   if (process.env.ORCHESTRATION_TOOL === 'conductor') {
     console.log('Starting Conductor workflow');
     return await startConductorApplicationWorkflow(userName, email, credit);
+  } else if (process.env.ORCHESTRATION_TOOL === 'temporal') {
+    console.log('Starting Temporal workflow');
+    return await startTemporalApplicationWorkflow(userName, email, credit);
   }
-  console.log('Starting Temporal workflow');
-  return await startTemporalApplicationWorkflow(userName, email, credit);
+
+  throw new Error('ORCHESTRATION_TOOL not provided as environment variable or invalid');
 }
 
 router.post('/', function (req, res) {
