@@ -33,8 +33,8 @@ async function requestCrmProfileCreation(name) {
 
 async function initiateCreditCheck({ name, crmId, credit }) {
   const params = new URLSearchParams({
-    userName: name,
-    crmId,
+    name,
+    id: crmId,
     credit,
     isLongPolling: true,
   });

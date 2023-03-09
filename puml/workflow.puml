@@ -54,25 +54,33 @@ Conductor -> Conductor: input: string(result)
 end
 
 == 4.1. SWITCH: "Low Credit"  ==
+group manual_approval
+Conductor -> Conductor: Wait
+end
+
+group get_manual_approval_taskid
+Conductor -> Conductor: GET output: string(workflowInstanceId), string(taskId)
+end
+
 group trigger_manual_approval
-Conductor -> Notifier: POST manual-approval input: string(name), string(id), number(credit)
+Conductor -> Notifier: POST input: string(name), string(id), number(credit), string(workflowInstanceId), string(taskId)
 activate Notifier
 Notifier -> Banker: send notification of manual need for approval
 deactivate Notifier
 activate Banker
 Banker -> App: manually approve credit
-deactivate Banker
 activate App
+deactivate Banker
 end
 
 group manual_approval
-App -> Conductor: POST input: string(workflowInstanceId), string(taskId)
+App -> Conductor: POST input: string(workflowInstanceId), string(taskId), string(status)
 deactivate App
 end
 
 == 4.2. SWITCH: "Acceptable Credit" or Continue "Low Credit"  ==
 
-group provision_card
+group provision_credit_card
 Conductor -> Notifier: POST provisioned input: string(name), string(id), number(credit)
 activate Notifier
 Notifier -> Customer: send notification of provisioned card
