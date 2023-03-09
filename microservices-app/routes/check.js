@@ -4,8 +4,9 @@ const router = express.Router();
 
 const { CREDIT_CHECK_SCORE } = require('../constants');
 
-const MAX_WAIT_MS = 100_000; // milliseconds
+const MAX_WAIT_MS = 40_000; // milliseconds
 const HEARTBEAT_TIMEOUT_MS = 1000;
+const MS_IN_A_SEC = 1000;
 
 function updateCrmMock(resultHash) { // using a basic file in the docker image
   let result = Math.random() < 0.5 ? CREDIT_CHECK_SCORE.ACCEPTABLE : CREDIT_CHECK_SCORE.LOW;
@@ -17,9 +18,9 @@ function updateCrmMock(resultHash) { // using a basic file in the docker image
 }
 
 function mockCreditCheck(resultHash) {
-  console.log(`Mocking credit check with random timer of up to ${MAX_WAIT_MS / 1000} seconds`);
-  const waitTime = Math.random() * 100000;
-  console.log(`Wait time is ${waitTime / 1000} seconds`);
+  console.log(`Mocking credit check with random timer of up to ${MAX_WAIT_MS / MS_IN_A_SEC} seconds`);
+  const waitTime = Math.random() * MAX_WAIT_MS;
+  console.log(`Wait time is ${waitTime / MS_IN_A_SEC} seconds`);
   setTimeout(() => updateCrmMock(resultHash), waitTime);
 }
 
@@ -60,13 +61,13 @@ router.get('/', async function (req, res) {
   console.log('Credit check request received: ', { query: req.query, body: req.body });
 
   const {
-    userName,
-    crmId,
-    creditRequest,
+    name,
+    id,
+    credit,
     isLongPolling
   } = req.query;
 
-  const resultHash = getFilename(userName, crmId);
+  const resultHash = getFilename(name, id);
   let result = getCheckResult(resultHash);
 
   if (!result) {
@@ -75,16 +76,16 @@ router.get('/', async function (req, res) {
     if (isLongPolling === 'true') {
       result = await waitForProfileCreation(resultHash);
     } else {
-      res.status(404).send(`Credit check of ${creditRequest} in progress for user: ${userName} with id: ${crmId}. Please keep polling until it is done`);
+      res.status(404).send(`Credit check of ${credit} in progress for user: ${name} with id: ${id}. Please keep polling until it is done`);
 
       return;
     }
   }
 
   res.send({
-    name: userName,
-    id: crmId,
-    credit: creditRequest,
+    name,
+    id,
+    credit,
     result
   });
 });
