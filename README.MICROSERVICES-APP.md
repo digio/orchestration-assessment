@@ -15,7 +15,7 @@ This web app contains:
 * CRM API
 * Temporal workflow and worker code
 
-For a better view on the requirements, please see the [high level diagrams in the wiki](https://mantelgroup.atlassian.net/wiki/spaces/DIG/pages/4516413638/PoC+-+Orchestration+Tools+-+Conductor+vs+Temporal#High-Level-Workflow-Diagram). 
+To better understand the use case, please see the [blog series, starting with part 1](https://digio.com.au/learn/blog/orchestrating-microservices/). 
 
 ## Getting Started
 

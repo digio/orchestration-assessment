@@ -14,6 +14,8 @@ Once running, the Temporal PoC will have the following components exposed:
 * Temporal Server: http://localhost:7233
 * Microservices App: http://localhost:4000/ 
 
+To better understand the Temporal PoC, please see the second blog in our blog series: LINK TBD. 
+
 ## Getting Started
 
 ### Prerequisites

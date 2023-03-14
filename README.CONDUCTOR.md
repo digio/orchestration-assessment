@@ -17,9 +17,7 @@ Once running, the Conductor PoC will have the following components exposed:
 * Conductor Swagger: http://localhost:8080/swagger-ui/index.html?configUrl=/api-docs/swagger-config#/
 * Microservices App: http://localhost:4000/ 
 
-** Please **NOTE** that there may be some bugs in Conductor that we have recorded in our Jira project under the Conductor epic:
-https://mantelgroup.atlassian.net/browse/OTP-2.
-If you are having issues, that would be a good place to search in case we already visited them in this project.
+To better understand the Conductor PoC, please see the third blog in our blog series: LINK TBD. 
 
 ## Getting Started
 

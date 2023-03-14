@@ -4,7 +4,7 @@ This project contains the required components for the Conductor vs Temporal Orch
 
 This PoC simulates a new customer credit card application in a bank.
 
-To find out more about the requirements, please read the [wiki](https://mantelgroup.atlassian.net/wiki/spaces/DIG/pages/4516413638/PoC+-+Orchestration+Tools+-+Conductor+vs+Temporal).
+To find out more about the project, please read the [blog series, starting with part 1](https://digio.com.au/learn/blog/orchestrating-microservices/).
 
 This project contains:
 
@@ -17,8 +17,6 @@ This project contains:
 ## Getting Started
 
 We recommend assessing each orchestration tool separately otherwise there may be conflicts (such as overlapping ports).
-
-** Check the [Jira board](https://mantelgroup.atlassian.net/jira/software/c/projects/OTP/boards/85) for any bugs that are related to set up if you see that things aren't working, or see the `Potential Issues` section of each relevant tool's readme.
 
 ** Note that all the docker compose commands are in the Makefile. You can go to your terminal and from the root of this project write `make <command name>` and it will run the commands for you.
 
