@@ -143,7 +143,7 @@ $ docker compose up
 
 ### 4. Populate Conductor
 
-To populate Conductor with the required definitions for the PoC, you will need to run the following from the `microservices-stubs` repository root:
+To populate Conductor with the required definitions for the PoC, you will need to run the following from the `orchestration-assessment` repository root:
 
 ```bash
 $ cd conductor/utils
@@ -156,7 +156,7 @@ For further instructions on how to populate Conductor refer to: `conductor/utils
 
 Once you have Conductor running and all definitions populated in Conductor, you will need to set the `ORCHESTRATION_TOOL` environment variable to `conductor` and set your [Mailtrap.io](https://mailtrap.io) credentials. You can set the environment variables either in your terminal or in the `.env` file. For more information refer to `"Mailtrap"` and `"Environment Variables"` sections in the `README.MICROSERVICES_APP.md`.
 
-To run the Microservices App, you will need to run the following from the `microservices-stubs` repository root:
+To run the Microservices App, you will need to run the following from the `orchestration-assessment` repository root:
 
 ```bash
 $ ORCHESTRATION_TOOL=conductor \
@@ -209,7 +209,7 @@ in the Conductor `docker/docker-compose.yaml` file for the elasticsearch service
 Considering ElasticSearch has the above issues, OpenSearch can be used as an
 alternative. OpenSearch is an in-place replacement for ElasticSearch and is
 fully API-compatible.
-See the `docker-compose-conductor.uml` in this microservices-stubs repository for more details on how to set it up in Conductor's `docker/docker-compose.yaml`, or just run our All-in-one docker file instead where all issues have been resolved.
+See the `docker-compose-conductor.uml` in this `orchestration-assessment` repository for more details on how to set it up in Conductor's `docker/docker-compose.yaml`, or just run our All-in-one docker file instead where all issues have been resolved.
 
 ### Error `vm.max_map_count`
 

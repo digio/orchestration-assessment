@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('microservices-stubs:server');
+var debug = require('debug')('microservices-app:server');
 var http = require('http');
 
 /**
